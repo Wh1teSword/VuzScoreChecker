@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Куда можно поступить</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <h1>Подбор вузов по баллам</h1>
+
+  <div class="form">
+    <label>
+      Суммарный балл:
+      <input type="number" id="scoreInput" placeholder="Например, 350">
+    </label>
+
+    <label>
+      Город:
+      <select id="citySelect">
+        <option value="all">Любой</option>
+        <option value="Москва">Москва</option>
+        <option value="Санкт-Петербург">Санкт-Петербург</option>
+        <option value="Екатеринбург">Екатеринбург</option>
+      </select>
+    </label>
+
+    <button onclick="filterVuz()">Показать варианты</button>
+  </div>
+
+  <div id="results"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
