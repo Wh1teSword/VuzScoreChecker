@@ -1,0 +1,2 @@
+# VuzScoreChecker
+МОШ проект
