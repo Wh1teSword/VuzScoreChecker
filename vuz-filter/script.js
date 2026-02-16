@@ -9,7 +9,11 @@ const programs = {
   IB: { name: "Информационная безопасность", places: 20, code: "IB" },
   CS: { name: "Компьютерные науки", places: 50, code: "CS" },
   MATH: { name: "Математика", places: 40, code: "MATH" },
-  SE: { name: "Программная инженерия", places: 35, code: "SE" }
+  SE: { name: "Программная инженерия", places: 35, code: "SE" },
+
+  // Новые программы
+  PMI: { name: "Прикладная математика и информатика", places: 45, code: "PMI" },
+  PIF: { name: "Прикладная математика и физика", places: 30, code: "PIF" }
 };
 
 // ===== КОНКУРСНЫЕ СПИСКИ (пример) =====
@@ -82,9 +86,45 @@ const list_0108 = [
     applications: [
       { program: "SE", priority: 1, consent: true } // УрФУ
     ]
+  },
+  {
+    id: 7,
+    physics: 88,
+    russian: 84,
+    math: 91,
+    achievements: 6,
+    total: 269,
+    applications: [
+      { program: "PMI", priority: 1, consent: true }
+    ]
+  },
+  {
+    id: 8,
+    physics: 90,
+    russian: 86,
+    math: 93,
+    achievements: 8,
+    total: 277,
+    applications: [
+      { program: "PIF", priority: 1, consent: true }
+    ]
+  },
+  {
+    id: 9,
+    physics: 82,
+    russian: 79,
+    math: 85,
+    achievements: 4,
+    total: 250,
+    applications: [
+      { program: "PMI", priority: 2, consent: true }
+    ]
   }
 ];
+
 const data = [
+
+  // ===== МГУ =====
   {
     vuz: "МГУ",
     city: "Москва",
@@ -93,12 +133,37 @@ const data = [
     year: 2024
   },
   {
+    vuz: "МГУ",
+    city: "Москва",
+    program: "Математика",
+    minScore: 370,
+    year: 2024
+  },
+  {
+    vuz: "МГУ",
+    city: "Москва",
+    program: "Компьютерные науки",
+    minScore: 380,
+    year: 2024
+  },
+
+  // ===== МФТИ =====
+  {
     vuz: "МФТИ",
     city: "Москва",
     program: "Информатика и вычислительная техника",
     minScore: 390,
     year: 2024
   },
+  {
+    vuz: "МФТИ",
+    city: "Москва",
+    program: "Прикладная математика и физика",
+    minScore: 395,
+    year: 2024
+  },
+
+  // ===== ВШЭ =====
   {
     vuz: "ВШЭ",
     city: "Москва",
@@ -107,6 +172,15 @@ const data = [
     year: 2024
   },
   {
+    vuz: "ВШЭ",
+    city: "Москва",
+    program: "Программная инженерия",
+    minScore: 355,
+    year: 2024
+  },
+
+  // ===== СПбГУ =====
+  {
     vuz: "СПбГУ",
     city: "Санкт-Петербург",
     program: "Математика",
@@ -114,30 +188,51 @@ const data = [
     year: 2024
   },
   {
+    vuz: "СПбГУ",
+    city: "Санкт-Петербург",
+    program: "Прикладная математика и информатика",
+    minScore: 345,
+    year: 2024
+  },
+
+  // ===== УрФУ =====
+  {
     vuz: "УрФУ",
     city: "Екатеринбург",
     program: "Программная инженерия",
     minScore: 310,
     year: 2024
+  },
+  {
+    vuz: "УрФУ",
+    city: "Екатеринбург",
+    program: "Информационная безопасность",
+    minScore: 300,
+    year: 2024
   }
+
 ];
 
 function filterVuz() {
   const score = Number(document.getElementById('scoreInput').value);
   const city = document.getElementById('citySelect').value;
+  const vuz = document.getElementById('vuzSelect').value;
+  const sort = document.getElementById('sortSelect').value;
   const resultsDiv = document.getElementById('results');
 
   resultsDiv.innerHTML = '';
 
-  if (!score) {
+  if (isNaN(score) || score <= 0) {
     resultsDiv.innerHTML = '<p>Введите суммарный балл</p>';
     return;
   }
 
   let found = false;
+  let filteredData = [];
 
   data.forEach(item => {
     if (city !== 'all' && item.city !== city) return;
+    if (vuz !== 'all' && item.vuz !== vuz) return;
 
     let status, color, chance;
     const diff = score - item.minScore;
@@ -174,11 +269,15 @@ function filterVuz() {
       const rank = getRank(programEntry.code, score);
       const places = programEntry.places;
     
+      // ===== Симуляция распределения мест =====
+      const admitted = simulateAdmission(programEntry.code, score, programEntry.places);
+      
       let placeText = "";
-      if (rank <= places) {
-        placeText = "<p style='color:green'><b>Проходишь по бюджетным местам</b></p>";
+      
+      if (admitted) {
+        placeText = "<p style='color:green'><b>Ты проходишь на бюджет (симуляция)</b></p>";
       } else {
-        placeText = "<p style='color:red'><b>Не проходишь по количеству мест</b></p>";
+        placeText = "<p style='color:red'><b>Ты не проходишь на бюджет (симуляция)</b></p>";
       }
     
       rankText =
@@ -203,8 +302,26 @@ function filterVuz() {
       "<p style='color:" + color + "'><b>" + status + "</b></p>" +
       rankText;
 
-    resultsDiv.appendChild(block);
+    filteredData.push({
+      element: block,
+      chance: chance,
+      minScore: item.minScore
+    });
     found = true;
+  });
+
+  // Сортировка
+  if (sort === "chance") {
+    filteredData.sort((a, b) => b.chance - a.chance);
+  }
+
+  if (sort === "minScore") {
+    filteredData.sort((a, b) => b.minScore - a.minScore);
+  }
+
+  // Вывод после сортировки
+  filteredData.forEach(item => {
+    resultsDiv.appendChild(item.element);
   });
 
   if (!found) {
@@ -213,21 +330,58 @@ function filterVuz() {
 }
 
 function getRank(programCode, userScore) {
-  // берём всех, кто подал на эту программу
+  // Берём всех абитуриентов с согласием на эту программу
   const applicants = list_0108
     .filter(a =>
       a.applications.some(app => app.program === programCode && app.consent)
     )
     .map(a => a.total);
 
-  // добавляем пользователя
+  // Добавляем пользователя
   applicants.push(userScore);
- 
-  // сортируем по убыванию
+
+  // Сортируем по убыванию баллов
   applicants.sort((a, b) => b - a);
 
-  // место пользователя
-  return applicants.indexOf(userScore) + 1;
+  // Считаем место корректно
+  let rank = 1;
+
+  for (let i = 0; i < applicants.length; i++) {
+    if (applicants[i] > userScore) {
+      rank++;
+    }
+  }
+
+  return rank;
 }
 
 console.log("script.js загружен");
+
+function resetFilters() {
+  document.getElementById('scoreInput').value = '';
+  document.getElementById('citySelect').value = 'all';
+  document.getElementById('vuzSelect').value = 'all';
+  document.getElementById('sortSelect').value = 'none';
+  document.getElementById('results').innerHTML = '';
+}
+
+function simulateAdmission(programCode, userScore, places) {
+  // Берём всех с согласием на эту программу
+  const applicants = list_0108
+    .filter(a =>
+      a.applications.some(app => app.program === programCode && app.consent)
+    )
+    .map(a => a.total);
+
+  // Добавляем пользователя
+  applicants.push(userScore);
+
+  // Сортируем по убыванию баллов
+  applicants.sort((a, b) => b - a);
+
+  // Берём только тех, кто попадает в количество мест
+  const admitted = applicants.slice(0, places);
+
+  // Проверяем, есть ли пользователь среди зачисленных
+  return admitted.includes(userScore);
+}

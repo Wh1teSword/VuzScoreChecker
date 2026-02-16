@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Куда можно поступить</title>
+  <title>Подбор вузов по баллам</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -10,6 +10,7 @@
   <h1>Подбор вузов по баллам</h1>
 
   <div class="form">
+
     <label>
       Суммарный балл:
       <input type="number" id="scoreInput" placeholder="Например, 350">
@@ -25,11 +26,38 @@
       </select>
     </label>
 
-    <button onclick="filterVuz()">Показать варианты</button>
+    <label>
+      Вуз:
+      <select id="vuzSelect">
+        <option value="all">Любой</option>
+        <option value="МГУ">МГУ</option>
+        <option value="МФТИ">МФТИ</option>
+        <option value="ВШЭ">ВШЭ</option>
+        <option value="СПбГУ">СПбГУ</option>
+        <option value="УрФУ">УрФУ</option>
+      </select>
+    </label>
+
+    <label>
+      Сортировка:
+      <select id="sortSelect">
+        <option value="none">Без сортировки</option>
+        <option value="chance">По вероятности поступления</option>
+        <option value="minScore">По проходному баллу</option>
+      </select>
+    </label>
+
+    <div style="margin-top: 10px;">
+      <button onclick="filterVuz()">Показать варианты</button>
+      <button onclick="resetFilters()">Сбросить</button>
+    </div>
+
   </div>
 
-  <div id="results"></div>
+  <div id="results" style="margin-top:20px;"></div>
 
+  <!-- ВАЖНО: имя файла должно совпадать 1 в 1 -->
   <script src="script.js"></script>
+
 </body>
 </html>
